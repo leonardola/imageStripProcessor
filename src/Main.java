@@ -1,11 +1,3 @@
-/*import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;*/
-
 import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
@@ -56,7 +48,7 @@ public class Main {
             }
         }
 
-        BufferedImage resizedImage = resizeToPrint(bufferedImage, decoder.getWidth() * 2, decoder.getHeight()*2);
+        BufferedImage resizedImage = resize(bufferedImage, decoder.getWidth() * 2, decoder.getHeight()*2);
 
         try {
             File outputfile = new File("saved.png");
@@ -67,7 +59,7 @@ public class Main {
 
     }
 
-    private static BufferedImage resizeToPrint(BufferedImage image, int finalWidth, int finalHeight) {
+    private static BufferedImage resize(BufferedImage image, int finalWidth, int finalHeight) {
 
         return Scalr.resize(
                 image,
@@ -79,98 +71,3 @@ public class Main {
         );
     }
 }
-
-
-
-/*    public static void main(String[] args) {
-        String type = "";
-        String path = "image.ppm";
-
-        PPMImage ppmImage;
-
-        int[] raster;
-        try {
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            new FileInputStream(path),
-                            Charset.forName("UTF-8")));
-
-            ppmImage = new PPMImage(path, reader);
-
-            //p6
-            type += (char) reader.read();
-            type += (char) reader.read();
-
-            ppmImage.setType(type);
-
-            String buff = "";
-            char singleChar;
-            boolean stop = false;
-            String[] data = new String[4];
-            int i = 0;
-
-            reader.read();//white space
-            do {
-
-                singleChar = (char) reader.read();
-                if (singleChar != ' ' && singleChar != '\n') {
-                    buff += singleChar;
-                } else {
-                    data[i] = buff;
-                    System.out.println(buff);
-                    buff = "";
-                    i++;
-                    if (i >= 3) {
-                        stop = true;
-                    }
-                }
-
-            } while (!stop);
-
-            if(Integer.parseInt(data[2]) > 255){
-                System.out.println("RGB Invalido");
-                return;
-            }
-
-            ppmImage.setWidth(Integer.parseInt(data[0]));
-            ppmImage.setHeight(Integer.parseInt(data[1]));
-
-            raster = new int[ppmImage.getWidth() * ppmImage.getHeight() * 3];
-
-            int c;
-            i = 0;
-            while ((c = reader.read()) != -1) {
-                raster[i] = c;
-                char character = (char) c;
-                System.out.println(character);
-                i++;
-                // Do something with your character
-            }
-        } catch (Exception e) {
-            System.out.println("Error " + e.getMessage());
-            return;
-        }
-
-
-        BufferedImage bufferedImage = new BufferedImage(ppmImage.getWidth(), ppmImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-        bufferedImage.setRGB(0, 0, ppmImage.getWidth(), ppmImage.getHeight(), raster, 0,0);
-
-        try{
-            File outputfile = new File("saved.png");
-            ImageIO.write(bufferedImage, "ppm", outputfile);
-        }catch (Exception e){
-            System.out.println("Erro ao gerar png: "+ e.getMessage());
-        }
-
-//        try{
-//            RandomAccessFile f = new RandomAccessFile("image.ppm", "r");
-//            byte[] b = new byte[(int)f.length()];
-//            f.readFully(b);
-//            System.out.println("asdf");
-//        }catch (Exception e){
-//            System.out.println("Error "+ e.getMessage());
-//        }
-
-    }
-}*/
