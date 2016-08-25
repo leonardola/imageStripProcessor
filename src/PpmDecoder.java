@@ -56,8 +56,9 @@ public class PpmDecoder {
 
     /// Constructor.
     // @param in The stream to read the bytes from.
-    public PpmDecoder(InputStream in) {
+    public PpmDecoder(InputStream in) throws IOException {
         this.in = in;
+        readHeader(in);
     }
 
     /// Utility routine to read a byte.  Instead of returning -1 on

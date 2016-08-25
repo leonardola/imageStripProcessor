@@ -20,43 +20,60 @@ public class Main {
             return;
         }
 
-        PpmDecoder decoder = new PpmDecoder(in);
+        PpmDecoder decoder;
 
         try {
-            decoder.readHeader(in);
+            decoder = new PpmDecoder(in);
         } catch (Exception e) {
-            System.out.println("Não pode ler o cabeçalho");
+            System.out.println("Não pode ler o cabeçalho: " + e.getMessage());
             return;
         }
 
-        int[] raster = new int[decoder.getWidth() * decoder.getHeight()];
 
-        try {
-            decoder.readRow(in, raster, decoder.getHeight());
-        } catch (Exception e) {
-            System.out.println("Não pode ler uma coluna");
+        int stripSize = decoder.getHeight() / 10;
+        //int module = decoder.getHeight() % 10;
+
+        BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
+        BufferedImage outputImage = new BufferedImage(decoder.getWidth(), decoder.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        int stripStart = 0;
+        int stripEnd = stripSize;
+        int[] raster = new int[decoder.getWidth() * stripSize];
+
+        for (int i = 0; i < 10; i++) {
+
+            try {
+                decoder.readRow(in, raster, stripSize);
+            } catch (Exception e) {
+                System.out.println("Não pode ler uma coluna: " + e.getMessage());
+                return;
+            }
+
+            setPixels(originalStripe, decoder.getWidth(), stripSize, raster);
+            BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * 2, decoder.getHeight() * 2);
+
+            transferPixels(originalStripe, resizedStripe, stripStart, stripEnd);
+
+            stripStart = stripEnd;
+            stripEnd += stripSize;
         }
 
-        BufferedImage bufferedImage = new BufferedImage(decoder.getWidth(), decoder.getHeight(), BufferedImage.TYPE_INT_RGB);
+        try {
+            File outputfile = new File("saved.png");
+            ImageIO.write(outputImage, "png", outputfile);
+        } catch (Exception e) {
+            System.out.println("Erro ao gerar png: " + e.getMessage());
+        }
+    }
 
-
+    private static void setPixels(BufferedImage bufferedImage, int imageWidth, int stripSize, int[] raster) {
         int i = 0;
-        for (int x = 0; x < decoder.getWidth(); x++) {
-            for (int y = 0; y < decoder.getHeight(); y++) {
+        for (int y = 0; y < stripSize; y++) {
+            for (int x = 0; x < imageWidth; x++) {
                 bufferedImage.setRGB(x, y, raster[i]);
                 i++;
             }
         }
-
-        BufferedImage resizedImage = resize(bufferedImage, decoder.getWidth() * 2, decoder.getHeight()*2);
-
-        try {
-            File outputfile = new File("saved.png");
-            ImageIO.write(resizedImage, "png", outputfile);
-        } catch (Exception e) {
-            System.out.println("Erro ao gerar png: " + e.getMessage());
-        }
-
     }
 
     private static BufferedImage resize(BufferedImage image, int finalWidth, int finalHeight) {
@@ -69,5 +86,17 @@ public class Main {
                 finalHeight,
                 Scalr.OP_ANTIALIAS
         );
+    }
+
+    private static void transferPixels(BufferedImage input, BufferedImage output, int start, int end) {
+
+
+        int inputY = 0;
+        for (int y = start; y < end; y++) {
+            for (int x = 0; x < input.getWidth(); x++) {
+                output.setRGB(x, y, input.getRGB(x, inputY));
+            }
+            inputY++;
+        }
     }
 }
