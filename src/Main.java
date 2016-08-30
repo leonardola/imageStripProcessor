@@ -36,11 +36,13 @@ public class Main {
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
         BufferedImage outputImage = new BufferedImage(decoder.getWidth(), decoder.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-        int stripStart = 0;
-        int stripEnd = stripSize;
         int[] raster = new int[decoder.getWidth() * stripSize];
 
-        for (int i = 0; i < 10; i++) {
+        int scalatedStripSize = stripSize * 2;
+        int scalatedStripStart = 0;
+        int scalatedStripEnd = stripSize;
+
+        for (int i = 0; i < 1; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -50,12 +52,12 @@ public class Main {
             }
 
             setPixels(originalStripe, decoder.getWidth(), stripSize, raster);
-            BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * 2, decoder.getHeight() * 2);
+            BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * 2, stripSize * 2);
 
-            transferPixels(originalStripe, resizedStripe, stripStart, stripEnd);
+            transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd);
 
-            stripStart = stripEnd;
-            stripEnd += stripSize;
+            scalatedStripStart = scalatedStripEnd;
+            scalatedStripEnd += scalatedStripSize;
         }
 
         try {
@@ -90,11 +92,14 @@ public class Main {
 
     private static void transferPixels(BufferedImage input, BufferedImage output, int start, int end) {
 
-
         int inputY = 0;
         for (int y = start; y < end; y++) {
             for (int x = 0; x < input.getWidth(); x++) {
-                output.setRGB(x, y, input.getRGB(x, inputY));
+                try{
+                    output.setRGB(x, y, input.getRGB(x, inputY));
+                }catch (Exception e){
+                    System.out.println("ASDFADFA");
+                }
             }
             inputY++;
         }
