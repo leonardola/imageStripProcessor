@@ -42,6 +42,7 @@ public class Main {
         int scalatedStripStart = 0;
         int scalatedStripEnd = scalatedStripSize;
 
+        //needs to process the left over pixels too
         for (int i = 0; i <= 10; i++) {
 
             try {
