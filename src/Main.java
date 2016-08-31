@@ -31,18 +31,18 @@ public class Main {
 
 
         int stripSize = decoder.getHeight() / 10;
-        //int module = decoder.getHeight() % 10;
+        int leftOverStripe = (decoder.getHeight() % 10) * 2;
 
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
-        BufferedImage outputImage = new BufferedImage(decoder.getWidth(), decoder.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage outputImage = new BufferedImage(decoder.getWidth()*2, decoder.getHeight()*2, BufferedImage.TYPE_INT_RGB);
 
         int[] raster = new int[decoder.getWidth() * stripSize];
 
         int scalatedStripSize = stripSize * 2;
         int scalatedStripStart = 0;
-        int scalatedStripEnd = stripSize;
+        int scalatedStripEnd = scalatedStripSize;
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i <= 10; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -56,8 +56,15 @@ public class Main {
 
             transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd);
 
-            scalatedStripStart = scalatedStripEnd;
-            scalatedStripEnd += scalatedStripSize;
+            if(i < 10){
+                scalatedStripStart = scalatedStripEnd;
+                scalatedStripEnd += scalatedStripSize;
+            }else{
+                scalatedStripStart = scalatedStripEnd;
+                scalatedStripEnd += leftOverStripe;
+                stripSize = leftOverStripe;
+            }
+
         }
 
         try {
@@ -95,11 +102,7 @@ public class Main {
         int inputY = 0;
         for (int y = start; y < end; y++) {
             for (int x = 0; x < input.getWidth(); x++) {
-                try{
-                    output.setRGB(x, y, input.getRGB(x, inputY));
-                }catch (Exception e){
-                    System.out.println("ASDFADFA");
-                }
+                output.setRGB(x, y, input.getRGB(x, inputY));
             }
             inputY++;
         }
