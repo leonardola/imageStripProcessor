@@ -41,8 +41,8 @@ public class Main {
 
 
         int i = 0;
-        for (int x = 0; x < decoder.getWidth(); x++) {
-            for (int y = 0; y < decoder.getHeight(); y++) {
+        for (int y = 0; y < decoder.getHeight(); y++) {
+            for (int x = 0; x < decoder.getWidth(); x++) {
                 bufferedImage.setRGB(x, y, raster[i]);
                 i++;
             }
