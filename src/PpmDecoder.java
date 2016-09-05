@@ -257,8 +257,5 @@ public class PpmDecoder {
 
         this.in.getChannel().position(filePointer);
 
-        /*if(skipedBytes != filePointer){
-            throw new Exception("Impossible to go back " + numberOfLines + " lines");
-        }*/
     }
 }
