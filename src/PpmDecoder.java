@@ -47,7 +47,8 @@ public class PpmDecoder {
     private static final int PBM_RAW = 4;
     private static final int PGM_RAW = 5;
     private static final int PPM_RAW = 6;
-    private InputStream in;
+    private static long filePointer = 0;
+    private FileInputStream in;
     private int type;
     private int width = -1, height = -1;
     private int maxval;
@@ -56,7 +57,7 @@ public class PpmDecoder {
 
     /// Constructor.
     // @param in The stream to read the bytes from.
-    public PpmDecoder(InputStream in) throws IOException {
+    public PpmDecoder(FileInputStream in) throws IOException {
         this.in = in;
         readHeader(in);
     }
@@ -65,8 +66,12 @@ public class PpmDecoder {
     // EOF, it throws an exception.
     private static int readByte(InputStream in) throws IOException {
         int b = in.read();
+
         if (b == -1)
             throw new EOFException();
+
+        filePointer++;
+
         return b;
     }
 
@@ -240,5 +245,20 @@ public class PpmDecoder {
     /// Utility routine to rescale a pixel value from a non-eight-bit maxval.
     private int fixDepth(int p) {
         return (p * 255 + maxval / 2) / maxval;
+    }
+
+
+    public void goBackNLines(int numberOfLines) throws Exception {
+        this.in.getChannel().position(0);
+
+        int numberOfBytesToGoBack = numberOfLines * 3 * width;
+
+        filePointer -= numberOfBytesToGoBack;
+
+        this.in.getChannel().position(filePointer);
+
+        /*if(skipedBytes != filePointer){
+            throw new Exception("Impossible to go back " + numberOfLines + " lines");
+        }*/
     }
 }

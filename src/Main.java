@@ -4,14 +4,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        InputStream in;
+        int numberOfLinesToGoBack = 3;
+
+        FileInputStream in;
 
         try {
             in = new FileInputStream("image.ppm");
@@ -55,15 +55,28 @@ public class Main {
             setPixels(originalStripe, decoder.getWidth(), stripSize, raster);
             BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * 2, stripSize * 2);
 
-            transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd);
+
+            if(i == 0){
+                transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd);
+            }else{
+                transferPixels(resizedStripe, outputImage, scalatedStripStart - numberOfLinesToGoBack, scalatedStripEnd - numberOfLinesToGoBack);
+            }
 
             if(i < 10){
-                scalatedStripStart = scalatedStripEnd;
-                scalatedStripEnd += scalatedStripSize;
+                scalatedStripStart = scalatedStripEnd - numberOfLinesToGoBack;
+                scalatedStripEnd += scalatedStripSize - numberOfLinesToGoBack;
+                leftOverStripe += numberOfLinesToGoBack;
             }else{
                 scalatedStripStart = scalatedStripEnd;
                 scalatedStripEnd += leftOverStripe;
                 stripSize = leftOverStripe;
+            }
+
+            try{
+                decoder.goBackNLines(numberOfLinesToGoBack);
+            }catch (Exception e){
+                System.out.println("Erro ao voltar linhas " + e.getMessage());
+                return;
             }
 
         }
