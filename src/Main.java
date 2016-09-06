@@ -10,6 +10,7 @@ public class Main {
     public static void main(String[] args) {
 
         int numberOfLinesToGoBack = 3;
+        int numberOfEliminatedLines = numberOfLinesToGoBack * 2;
 
         FileInputStream in;
 
@@ -34,7 +35,7 @@ public class Main {
         int leftOverStripe = (decoder.getHeight() % 10) * 2;
 
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
-        BufferedImage outputImage = new BufferedImage(decoder.getWidth()*2, decoder.getHeight()*2, BufferedImage.TYPE_INT_RGB);
+        BufferedImage outputImage = new BufferedImage(decoder.getWidth() * 2, decoder.getHeight() * 2, BufferedImage.TYPE_INT_RGB);
 
         int[] raster = new int[decoder.getWidth() * stripSize];
 
@@ -43,7 +44,7 @@ public class Main {
         int scalatedStripEnd = scalatedStripSize;
 
         //needs to process the left over pixels too
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= 11; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -56,25 +57,25 @@ public class Main {
             BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * 2, stripSize * 2);
 
 
-            if(i == 0){
-                transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd);
-            }else{
-                transferPixels(resizedStripe, outputImage, scalatedStripStart - numberOfLinesToGoBack, scalatedStripEnd - numberOfLinesToGoBack);
+            if (i == 0) {
+                transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, 0);
+            } else {
+                transferPixels(resizedStripe, outputImage, scalatedStripStart - numberOfLinesToGoBack, scalatedStripEnd - numberOfEliminatedLines, numberOfLinesToGoBack);
             }
 
-            if(i < 10){
-                scalatedStripStart = scalatedStripEnd - numberOfLinesToGoBack;
-                scalatedStripEnd += scalatedStripSize - numberOfLinesToGoBack;
+            if (i < 10) {
+                scalatedStripStart = scalatedStripEnd - numberOfEliminatedLines;
+                scalatedStripEnd += scalatedStripSize - numberOfEliminatedLines;
                 leftOverStripe += numberOfLinesToGoBack;
-            }else{
+            } else {
                 scalatedStripStart = scalatedStripEnd;
                 scalatedStripEnd += leftOverStripe;
                 stripSize = leftOverStripe;
             }
 
-            try{
+            try {
                 decoder.goBackNLines(numberOfLinesToGoBack);
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Erro ao voltar linhas " + e.getMessage());
                 return;
             }
@@ -111,9 +112,13 @@ public class Main {
         );
     }
 
-    private static void transferPixels(BufferedImage input, BufferedImage output, int start, int end) {
-
+    private static void transferPixels(BufferedImage input, BufferedImage output, int start, int end, int offset) {
         int inputY = 0;
+
+        if (offset > 0) {
+            inputY = offset - 1;
+        }
+
         for (int y = start; y < end; y++) {
             for (int x = 0; x < input.getWidth(); x++) {
                 output.setRGB(x, y, input.getRGB(x, inputY));
