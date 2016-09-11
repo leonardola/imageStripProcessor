@@ -31,7 +31,7 @@ public class Main {
 
 
         int stripSize = decoder.getHeight() / 10;
-        int leftOverStripe = (decoder.getHeight() % 10) * 2;
+        int leftOverStripe = (decoder.getHeight() % 10);
 
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
         BufferedImage outputImage = new BufferedImage(decoder.getWidth() * 2, decoder.getHeight() * 2, BufferedImage.TYPE_INT_RGB);
@@ -42,8 +42,7 @@ public class Main {
         int scalatedStripStart = 0;
         int scalatedStripEnd = scalatedStripSize;
 
-        //needs to process the left over pixels too
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= 11; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -60,30 +59,37 @@ public class Main {
                 transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, 0);
             }else if(i < 10){
                 transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd - numberOfLinesToGoBack, numberOfLinesToGoBack);
+            }else{
+                transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, numberOfLinesToGoBack);
             }
 
             //volta as linhas da imagem original, para poder ter pixels a mais para processar
             try {
                 if(i == 0){
                     decoder.goBackNLines(numberOfLinesToGoBack);
+                    leftOverStripe += numberOfLinesToGoBack;
                 }else{
                     decoder.goBackNLines(numberOfLinesToGoBack/2);
+                    leftOverStripe += numberOfLinesToGoBack/2;
                 }
             } catch (Exception e) {
                 System.out.println("Erro ao voltar linhas " + e.getMessage());
                 return;
             }
 
-            if (i < 10) {
+            if (i < 9) {
                 scalatedStripStart += scalatedStripSize - numberOfLinesToGoBack;
                 scalatedStripEnd += scalatedStripSize - numberOfLinesToGoBack;
-                leftOverStripe += numberOfLinesToGoBack;
             } else {
-                scalatedStripStart = scalatedStripEnd;
+                scalatedStripStart = scalatedStripEnd - numberOfLinesToGoBack;
                 scalatedStripEnd += leftOverStripe;
                 stripSize = leftOverStripe;
-            }
 
+                raster = new int[decoder.getWidth() * stripSize*2];
+                originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
+
+                System.out.println(PpmDecoder.filePointer);
+            }
         }
 
         try {

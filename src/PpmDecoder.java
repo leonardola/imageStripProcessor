@@ -47,7 +47,7 @@ public class PpmDecoder {
     private static final int PBM_RAW = 4;
     private static final int PGM_RAW = 5;
     private static final int PPM_RAW = 6;
-    private static long filePointer = 0;
+    public static long filePointer = 0;
     private FileInputStream in;
     private int type;
     private int width = -1, height = -1;
