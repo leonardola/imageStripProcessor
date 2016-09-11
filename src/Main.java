@@ -9,8 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int numberOfLinesToGoBack = 3;
-        int numberOfEliminatedLines = numberOfLinesToGoBack * 2;
+        int numberOfLinesToGoBack = 3 * 2;
 
         FileInputStream in;
 
@@ -44,7 +43,7 @@ public class Main {
         int scalatedStripEnd = scalatedStripSize;
 
         //needs to process the left over pixels too
-        for (int i = 0; i <= 11; i++) {
+        for (int i = 0; i <= 10; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -59,25 +58,30 @@ public class Main {
 
             if (i == 0) {
                 transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, 0);
-            } else {
-                transferPixels(resizedStripe, outputImage, scalatedStripStart - numberOfLinesToGoBack, scalatedStripEnd - numberOfEliminatedLines, numberOfLinesToGoBack);
+            }else if(i < 10){
+                transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd - numberOfLinesToGoBack, numberOfLinesToGoBack);
+            }
+
+            //volta as linhas da imagem original, para poder ter pixels a mais para processar
+            try {
+                if(i == 0){
+                    decoder.goBackNLines(numberOfLinesToGoBack);
+                }else{
+                    decoder.goBackNLines(numberOfLinesToGoBack/2);
+                }
+            } catch (Exception e) {
+                System.out.println("Erro ao voltar linhas " + e.getMessage());
+                return;
             }
 
             if (i < 10) {
-                scalatedStripStart = scalatedStripEnd - numberOfEliminatedLines;
-                scalatedStripEnd += scalatedStripSize - numberOfEliminatedLines;
+                scalatedStripStart += scalatedStripSize - numberOfLinesToGoBack;
+                scalatedStripEnd += scalatedStripSize - numberOfLinesToGoBack;
                 leftOverStripe += numberOfLinesToGoBack;
             } else {
                 scalatedStripStart = scalatedStripEnd;
                 scalatedStripEnd += leftOverStripe;
                 stripSize = leftOverStripe;
-            }
-
-            try {
-                decoder.goBackNLines(numberOfLinesToGoBack);
-            } catch (Exception e) {
-                System.out.println("Erro ao voltar linhas " + e.getMessage());
-                return;
             }
 
         }
@@ -116,7 +120,7 @@ public class Main {
         int inputY = 0;
 
         if (offset > 0) {
-            inputY = offset - 1;
+            inputY = offset - 1;//fix for 0 started arrays
         }
 
         for (int y = start; y < end; y++) {
