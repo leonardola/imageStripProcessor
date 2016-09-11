@@ -31,7 +31,6 @@ public class Main {
 
 
         int stripSize = decoder.getHeight() / 10;
-        int leftOverStripe = (decoder.getHeight() % 10);
 
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
         BufferedImage outputImage = new BufferedImage(decoder.getWidth() * 2, decoder.getHeight() * 2, BufferedImage.TYPE_INT_RGB);
@@ -42,7 +41,7 @@ public class Main {
         int scalatedStripStart = 0;
         int scalatedStripEnd = scalatedStripSize;
 
-        for (int i = 0; i <= 11; i++) {
+        for (int i = 0; i <= 10; i++) {
 
             try {
                 decoder.readRow(in, raster, stripSize);
@@ -67,10 +66,8 @@ public class Main {
             try {
                 if(i == 0){
                     decoder.goBackNLines(numberOfLinesToGoBack);
-                    leftOverStripe += numberOfLinesToGoBack;
                 }else{
                     decoder.goBackNLines(numberOfLinesToGoBack/2);
-                    leftOverStripe += numberOfLinesToGoBack/2;
                 }
             } catch (Exception e) {
                 System.out.println("Erro ao voltar linhas " + e.getMessage());
@@ -81,9 +78,10 @@ public class Main {
                 scalatedStripStart += scalatedStripSize - numberOfLinesToGoBack;
                 scalatedStripEnd += scalatedStripSize - numberOfLinesToGoBack;
             } else {
+                //+ the 6 lines taken unecessarily on the last loop
+                stripSize = decoder.getHeight() - scalatedStripEnd/2 + numberOfLinesToGoBack;
                 scalatedStripStart = scalatedStripEnd - numberOfLinesToGoBack;
-                scalatedStripEnd += leftOverStripe;
-                stripSize = leftOverStripe;
+                scalatedStripEnd = decoder.getHeight() * 2;
 
                 raster = new int[decoder.getWidth() * stripSize*2];
                 originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
