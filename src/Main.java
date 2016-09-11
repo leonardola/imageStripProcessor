@@ -85,9 +85,11 @@ public class Main {
 
                 raster = new int[decoder.getWidth() * stripSize*2];
                 originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
-
-                System.out.println(PpmDecoder.filePointer);
             }
+
+            long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+            System.out.println("memória usada: " + usedMemory);
         }
 
         try {
