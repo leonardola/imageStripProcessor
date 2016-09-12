@@ -50,6 +50,10 @@ public class Main {
 
         BufferedImage resizedImage = resize(bufferedImage, decoder.getWidth() * 2, decoder.getHeight()*2);
 
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        System.out.println("memória usada: " + usedMemory);
+
         try {
             File outputfile = new File("saved.png");
             ImageIO.write(resizedImage, "png", outputfile);
