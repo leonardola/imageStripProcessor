@@ -33,7 +33,6 @@ public class Main {
         int stripSize = decoder.getHeight() / 10;
 
         BufferedImage originalStripe = new BufferedImage(decoder.getWidth(), stripSize, BufferedImage.TYPE_INT_RGB);
-        //BufferedImage outputImage = new BufferedImage(decoder.getWidth() * scaleFactor, decoder.getHeight() * scaleFactor, BufferedImage.TYPE_INT_RGB);
 
         int[] raster = new int[decoder.getWidth() * stripSize];
 
