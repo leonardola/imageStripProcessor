@@ -18,7 +18,7 @@ public class Main {
         try {
             in = new FileInputStream("image.ppm");
             decoder = new PpmDecoder(in);
-            ou = new FileOutputStream("out.ppm");
+            ou = new FileOutputStream("output.ppm");
             encoder = new PpmEncoder(ou, decoder.getWidth() * scaleFactor, decoder.getHeight() * scaleFactor);
         } catch (Exception e) {
             System.out.println("erro ao abrir a imagem :" + e.getMessage());
