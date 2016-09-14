@@ -1,33 +1,30 @@
 import org.imgscalr.Scalr;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileOutputStream;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        InputStream in;
+        FileInputStream in;
+        FileOutputStream ou;
+        PpmDecoder decoder;
+        PpmEncoder encoder;
+
+        int scaleFactor = 2;
 
         try {
             in = new FileInputStream("image.ppm");
+            decoder = new PpmDecoder(in);
+            ou = new FileOutputStream("out.ppm");
+            encoder = new PpmEncoder(ou, decoder.getWidth() * scaleFactor, decoder.getHeight() * scaleFactor);
         } catch (Exception e) {
             System.out.println("erro ao abrir a imagem :" + e.getMessage());
             return;
         }
 
-        PpmDecoder decoder = new PpmDecoder(in);
-
-        try {
-            decoder.readHeader(in);
-        } catch (Exception e) {
-            System.out.println("Não pode ler o cabeçalho");
-            return;
-        }
 
         int[] raster = new int[decoder.getWidth() * decoder.getHeight()];
 
@@ -50,17 +47,12 @@ public class Main {
 
         BufferedImage resizedImage = resize(bufferedImage, decoder.getWidth() * 2, decoder.getHeight()*2);
 
+        encoder.writeHeader();
+        encoder.writeBufferedImage(resizedImage);
+
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         System.out.println("memória usada: " + usedMemory);
-
-        try {
-            File outputfile = new File("saved.png");
-            ImageIO.write(resizedImage, "png", outputfile);
-        } catch (Exception e) {
-            System.out.println("Erro ao gerar png: " + e.getMessage());
-        }
-
     }
 
     private static BufferedImage resize(BufferedImage image, int finalWidth, int finalHeight) {

@@ -47,7 +47,7 @@ public class PpmDecoder {
     private static final int PBM_RAW = 4;
     private static final int PGM_RAW = 5;
     private static final int PPM_RAW = 6;
-    private InputStream in;
+    private FileInputStream in;
     private int type;
     private int width = -1, height = -1;
     private int maxval;
@@ -56,8 +56,9 @@ public class PpmDecoder {
 
     /// Constructor.
     // @param in The stream to read the bytes from.
-    public PpmDecoder(InputStream in) {
+    public PpmDecoder(FileInputStream in) throws IOException {
         this.in = in;
+        readHeader(in);
     }
 
     /// Utility routine to read a byte.  Instead of returning -1 on
