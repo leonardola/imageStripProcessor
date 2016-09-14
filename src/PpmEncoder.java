@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 
 public class PpmEncoder {
 
+    private static final int numberOfSubPixels = 3;
     private FileOutputStream outputFile;
     private int height, width;
 
@@ -27,24 +28,31 @@ public class PpmEncoder {
     }
 
     public void writeBufferedImage(BufferedImage image) {
+
+        byte[] pixels = new byte[image.getWidth() * image.getHeight() * numberOfSubPixels];
+
+        int i = 0;
+
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int pixel = image.getRGB(x, y);
 
+                byte r = (byte) ((pixel) & 0xFF);
+                byte g = (byte) ((pixel >> 8) & 0xFF);
+                byte b = (byte) ((pixel >> 16) & 0xFF);
 
-                try {
-                    byte r = (byte) ((pixel) & 0xFF);
-                    byte g = (byte) ((pixel >> 8) & 0xFF);
-                    byte b = (byte) ((pixel >> 16) & 0xFF);
-
-                    this.outputFile.write(g);
-                    this.outputFile.write(r);
-                    this.outputFile.write(b);
-                } catch (Exception e) {
-                    System.out.println("Não pode escrever o bite: x(" + x + ")" + " y(" + y + ")");
-                    System.exit(1);
-                }
+                pixels[i] = g;
+                pixels[i + 1] = r;
+                pixels[i + 2] = b;
+                i += 3;
             }
+        }
+
+        try{
+            this.outputFile.write(pixels);
+        } catch (Exception e) {
+            System.out.println("Não pode escrever a imagem");
+            System.exit(1);
         }
     }
 }
