@@ -25,6 +25,7 @@ public class Main {
             return;
         }
 
+        long startTime = System.nanoTime();
 
         int[] raster = new int[decoder.getWidth() * decoder.getHeight()];
 
@@ -50,9 +51,14 @@ public class Main {
         encoder.writeHeader();
         encoder.writeBufferedImage(resizedImage);
 
+        long estimatedTime = System.nanoTime() - startTime;
+
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         System.out.println("memória usada: " + usedMemory);
+        System.out.println("Tempo de execução em nano segundos: " + estimatedTime);
+
+
     }
 
     private static BufferedImage resize(BufferedImage image, int finalWidth, int finalHeight) {
