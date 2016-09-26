@@ -55,7 +55,7 @@ public class Main {
 
         //imagem com apenas os pixels bons
         BufferedImage goodPixels = new BufferedImage(decoder.getWidth() * scaleFactor, (stripSize * scaleFactor) - numberOfLinesToGoBack, BufferedImage.TYPE_INT_RGB);
-        int totalUsedMemory = 0;
+        long totalUsedMemory = 0;
 
         for (int i = 0; i <= 10; i++) {
 
