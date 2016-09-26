@@ -48,11 +48,14 @@ public class Main {
             return;
         }
 
+        long startTime = System.nanoTime();
+
         PpmEncoder encoder = new PpmEncoder(outputFile, decoder.getWidth() * scaleFactor, decoder.getHeight() * scaleFactor);
         encoder.writeHeader();
 
         //imagem com apenas os pixels bons
         BufferedImage goodPixels = new BufferedImage(decoder.getWidth() * scaleFactor, (stripSize * scaleFactor) - numberOfLinesToGoBack, BufferedImage.TYPE_INT_RGB);
+        int totalUsedMemory = 0;
 
         for (int i = 0; i <= 10; i++) {
 
@@ -110,10 +113,16 @@ public class Main {
 
             long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
+            totalUsedMemory += usedMemory;
             System.out.println("memória usada: " + usedMemory);
 
             encoder.writeBufferedImage(goodPixels);
         }
+
+        long estimatedTime = System.nanoTime() - startTime;
+
+        System.out.println("Média de uso de memória: " + totalUsedMemory/11);
+        System.out.println("Tempo em nano segundos: " + estimatedTime);
 
         /*try {
             File outputfile = new File("saved.png");
