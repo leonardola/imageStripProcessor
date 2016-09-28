@@ -69,15 +69,17 @@ public class Main {
             setPixels(originalStripe, decoder.getWidth(), stripSize, raster);
             BufferedImage resizedStripe = resize(originalStripe, decoder.getWidth() * scaleFactor, stripSize * scaleFactor);
 
+            if(i == 1){
+                goodPixels = new BufferedImage(decoder.getWidth() * scaleFactor, scalatedStripEnd - numberOfLinesToGoBack - scalatedStripStart, BufferedImage.TYPE_INT_RGB);
+            }
+
             if (i == 0) {
                 //transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, 0);
-
 
                 transferGoodPixels(resizedStripe, goodPixels, 0);
             } else if (i < 10) {
                 //transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd - numberOfLinesToGoBack, numberOfLinesToGoBack);
 
-                goodPixels = new BufferedImage(decoder.getWidth() * scaleFactor, scalatedStripEnd - numberOfLinesToGoBack - scalatedStripStart, BufferedImage.TYPE_INT_RGB);
                 transferGoodPixels(resizedStripe, goodPixels, numberOfLinesToGoBack);
             } else {
                 //transferPixels(resizedStripe, outputImage, scalatedStripStart, scalatedStripEnd, numberOfLinesToGoBack);
@@ -117,6 +119,8 @@ public class Main {
             System.out.println("memória usada: " + usedMemory);
 
             encoder.writeBufferedImage(goodPixels);
+
+            System.gc();
         }
 
         long estimatedTime = System.nanoTime() - startTime;
