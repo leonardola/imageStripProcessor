@@ -121,6 +121,7 @@ public class Main {
             encoder.writeBufferedImage(goodPixels);
 
             System.gc();
+            System.runFinalization ();
         }
 
         long estimatedTime = System.nanoTime() - startTime;
